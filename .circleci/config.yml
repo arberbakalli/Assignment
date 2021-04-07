@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build:
+
+    working_directory: ~/Assignment
+
+    docker:
+      - image: circleci/openjdk:11-stretch
+
+    steps:
+
+      - checkout
+
+      - restore_cache:
+          key: assignment-{{ checksum "pom.xml" }}
+
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: assignment-{{ checksum "pom.xml" }}
+
+      - run: mvn clean install
+
+      - store_test_results:
+          path: target/site/serenity/index.html
+
+      - store_artifacts:
+          path: target/mobiquity-1.0.0-SNAPSHOT.jar
